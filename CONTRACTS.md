@@ -8,6 +8,8 @@ with the SDK key in the body, like so: `{ sdkKey: 'beta_sdk_0' }`
 
 From this, it expects an object containing a `flags` and an `audiences` property, like so:
 
+7/19: this is expected to change per the caching conversation. Will update this later.
+
 ```json
 {
   "flags": [
