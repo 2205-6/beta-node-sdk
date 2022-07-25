@@ -1,5 +1,5 @@
 const EventSource = require('eventsource');
-const evaluate = require('./evaluation')
+const evaluate = require('./evaluation');
 const axios = require('axios');
 
 class Client {
@@ -13,10 +13,12 @@ class Client {
         audienceKey: {}
       }
     */
-    // setInterval(() => {
-    //   console.log('reinitialized');
-    //   this.getFlags();
-    // }, [this.config.reinitializationInterval])
+    if (this.config.reinitializationInterval) {
+      setInterval(() => {
+        console.log('reinitialized');
+        this.getFlags();
+      }, [this.config.reinitializationInterval]);
+    }
   }
 
   evaluateFlag(flagKey, userContext, defaultValue = false) {
@@ -38,10 +40,13 @@ class Client {
   async getFlags() {
     try {
       const options = {
-        headers: { Authorization: this.config.sdkKey }
-      }
+        headers: { Authorization: this.config.sdkKey },
+      };
       // returns only flags
-      const { data } = await axios.get(`${this.config.bearerAddress}/connect/serverInit/`, options);
+      const { data } = await axios.get(
+        `${this.config.bearerAddress}/connect/serverInit/`,
+        options
+      );
 
       this.flags = data;
       this.clientReady = true;
@@ -54,16 +59,17 @@ class Client {
     // this needs to listen for ALL changes, not just flag disables.
     // consider that sse only stays on for 30 seconds? we need to refresh. but it seems to be working just fine
     try {
-      let eventSource = new EventSource(`${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`);
+      let eventSource = new EventSource(
+        `${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`
+      );
       eventSource.addEventListener(this.config.sdkKey, (e) => {
-
         const streamedData = JSON.parse(e.data);
 
         for (let flag in streamedData) {
           this.setFlag(flag, streamedData[flag]);
         }
-      })
-     } catch (e) {
+      });
+    } catch (e) {
       console.log('error setting up stream');
     }
   }
@@ -118,10 +124,10 @@ class Client {
 
 // const testClient = new Client();
 // console.log('testClient flags:', testClient.flags)
-// for (let flag in flags) { 
+// for (let flag in flags) {
 //   let newFlag = {}
 //   newFlag[flag] = flags[flag]
-//   testClient.setFlag(newFlag) 
+//   testClient.setFlag(newFlag)
 // };
 // console.log('initial flags:', testClient.flags);
 // testClient.setFlag(newFlag);

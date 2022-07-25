@@ -1,7 +1,7 @@
 const Client = require('./Client');
 
 class Config {
-  constructor(sdkKey, bearerAddress, reinitializationInterval = 600000) {
+  constructor(sdkKey, bearerAddress, reinitializationInterval) {
     // initialize with sdkKey, bearer address
     this.sdkKey = sdkKey;
     this.bearerAddress = bearerAddress;
@@ -15,7 +15,7 @@ class Config {
       client.setStream();
       return client;
     } catch (e) {
-      console.log('connection failed')
+      console.log('connection failed');
       return client;
     }
   }
