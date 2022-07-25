@@ -23,15 +23,16 @@ class Client {
     return evaluate(flagKey, userContext, this, defaultValue);
   }
 
-  setFlag(newFlag) {
-    for (let flag in this.flags) {
-      if (flag === Object.keys(newFlag)[0]) {
-        delete this.flags[flag];
-        break;
-      }
-    }
-    const updatedFlags = {...this.flags, ...newFlag};
-    this.flags = updatedFlags;
+  setFlag(newFlagKey, newFlagData) {
+    // for (let flag in this.flags) {
+    //   if (flag === Object.keys(newFlag)[0]) {
+    //     delete this.flags[flag];
+    //     break;
+    //   }
+    // }
+    // const updatedFlags = {...this.flags, ...newFlag};
+    // this.flags = updatedFlags;
+    this.flags[newFlagKey] = newFlagData;
   }
 
   async getFlags() {
@@ -41,20 +42,8 @@ class Client {
       }
       // returns only flags
       const { data } = await axios.get(`${this.config.bearerAddress}/connect/serverInit/`, options);
-      /* returned flag data should be = 
-        { 
-          flagKey: {
-            status:
-            audienceKey: {}
-          } 
-        }
-      */
-      // store the returned flag data
-      for (let flag in data) { 
-        let newFlag = {}
-        newFlag[flag] = flags[flag];
-        this.setFlag(newFlag) 
-      };
+
+      this.flags = data;
       this.clientReady = true;
     } catch (e) {
       console.log('Error fetching flag data');
@@ -65,14 +54,19 @@ class Client {
     // this needs to listen for ALL changes, not just flag disables.
     // consider that sse only stays on for 30 seconds? we need to refresh. but it seems to be working just fine
     try {
-      const options = {
-        headers: { Authorization: this.config.sdkKey }
-      }
-
-      let eventSource = new EventSource(`${this.config.bearerAddress}/stream/server/`, options);
+      let eventSource = new EventSource(`${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`);
       eventSource.onmessage = (e) => {
-        console.log(e.data)
-        // e.data.forEach(flag => this.setFlag(flag))
+
+      // {"newflag":{"status":true}}
+
+      // {"newflag":{
+      // "california_students":{"combine":"ANY","conditions":[{"negate":false,"operator":"EQ","attribute":"state","vals":["california"]},{"negate":false,"operator":"EQ","attribute":"student","vals":["true"]}]},"status":true}}
+      // {"anotherflag" {
+
+      // }}
+        for (let flag of e.data) {
+          this.setFlag(flag, e.data[flag]);
+        }
       }
     } catch (e) {
       console.log(e);
