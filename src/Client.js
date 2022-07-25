@@ -60,7 +60,7 @@ class Client {
         const streamedData = JSON.parse(e.data);
 
         for (let flag in streamedData) {
-          this.setFlag(flag, e.data[flag]);
+          this.setFlag(flag, streamedData[flag]);
         }
       })
      } catch (e) {
