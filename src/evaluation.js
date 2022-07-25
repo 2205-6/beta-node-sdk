@@ -93,30 +93,30 @@ const evaluate = (flagKey, userContext, client, defaultValue) => {
   const { status, ...targetedAudiences } = flag;
   // console.log(`${flagKey} qualifies with any of these audiences: ${targetedAudiences}`)
   // console.log(`We are using this user context: ${JSON.stringify(userContext)}`)
-  let eval = false;
+  let evaluation = false;
   // flags without any audience targeting apply to everyone
   if (status && Object.keys(targetedAudiences).length == 0)  {
-    eval = true
+    evaluation = true
   } else {
     // loop through the array of targeted audiences
     for (let audience in targetedAudiences) {
       // console.log(`Looking at audience ${audience}`)
       const audienceContext = flag[audience];
-      eval = evaluateAudience(audienceContext, userContext)
+      evaluation = evaluateAudience(audienceContext, userContext)
       // since ANY audience is required, break early if true
-      if (eval) {
+      if (evaluation) {
         break;
       }
     }
   }
-  return eval;
+  return evaluation;
 }
 // evaluate audience conditions based on user attributes
 function evaluateAudience(audienceContext, userContext) {
-  let eval = false; // default to false
+  let evaluation = false; // default to false
   for (const condition of audienceContext.conditions) {
     if (evaluateCondition(userContext, condition)) {
-      eval = true;
+      evaluation = true;
       if (audienceContext.combine === 'ANY') {
         // if 'ANY' set, then return as soon as one condition is satisfied
         break;
@@ -128,14 +128,14 @@ function evaluateAudience(audienceContext, userContext) {
       // if condition is not met and ANY, keep going until theres no more conditions
       if (audienceContext.combine === 'ALL') {
         // exit early because at least one condition was not met.
-        eval = false;
+        evaluation = false;
         break;
       }
       // 'ANY' and false, go to next condition
     }
   }
   // console.log('audience key evaluations', audienceEvals);
-  return eval;
+  return evaluation;
 }
 
 // TEST
