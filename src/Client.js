@@ -56,7 +56,10 @@ class Client {
     try {
       let eventSource = new EventSource(`${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`);
       eventSource.addEventListener(this.config.sdkKey, (e) => {
-        for (let flag of e.data) {
+
+        const streamedData = JSON.parse(e.data);
+
+        for (let flag of streamedData) {
           this.setFlag(flag, e.data[flag]);
         }
       })
