@@ -55,24 +55,15 @@ class Client {
     // consider that sse only stays on for 30 seconds? we need to refresh. but it seems to be working just fine
     try {
       let eventSource = new EventSource(`${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`);
-      eventSource.onmessage = (e) => {
-
-      // {"newflag":{"status":true}}
-
-      // {"newflag":{
-      // "california_students":{"combine":"ANY","conditions":[{"negate":false,"operator":"EQ","attribute":"state","vals":["california"]},{"negate":false,"operator":"EQ","attribute":"student","vals":["true"]}]},"status":true}}
-      // {"anotherflag" {
-
-      // }}
+      eventSource.addEventListener(this.config.sdkKey, (e) => {
         for (let flag of e.data) {
           this.setFlag(flag, e.data[flag]);
         }
-      }
-    } catch (e) {
-      console.log(e);
+      })
+     } catch (e) {
+      console.log('error setting up stream');
     }
   }
-
 }
 
 // let flags = {
