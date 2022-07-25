@@ -95,7 +95,11 @@ const evaluate = (flagKey, userContext, client, defaultValue) => {
   // console.log(`We are using this user context: ${JSON.stringify(userContext)}`)
   let evaluation = false;
   // flags without any audience targeting apply to everyone
-  if (status && Object.keys(targetedAudiences).length == 0)  {
+  if (!status) {
+    return evaluation;
+  }
+
+  if (Object.keys(targetedAudiences).length == 0)  {
     evaluation = true
   } else {
     // loop through the array of targeted audiences
@@ -139,46 +143,124 @@ function evaluateAudience(audienceContext, userContext) {
 }
 
 // TEST
-// let userContext = { userId: 'jjuy', age: 27, country: 'Canada'}
+// let userContext = { userId: 'jjuy', beta: true }
 // let c = {
 //   flags: {
-//     "beta-header": {
-//       "status": true,
-//       "beta-testers": {
-//         combine: "ANY",
-//         conditions: [
-//           {
-//             "attribute": "beta",
-//             "operator": "EQ",
-//             "vals": ["true"],
-//             "negate": false
-//           }
-//         ]
-//       }
-//   },
-//   "CA-header": {
-//     "status": true,
-//     "na-testers": {
-//       combine: "ALL",
-//       conditions: [
-//         {
-//           "attribute": "country",
-//           "operator": "IN",
-//           "vals": ["canada", "usa"],
-//           "negate": false
+//     "beta_processor": {
+//         "beta_testers": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "beta",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
 //         },
-//         {
-//           "attribute": "age",
-//           "operator": "GT",
-//           "vals": ["18"],
-//           "negate": false
-//         }
-//       ]
+//         "status": false
+//     },
+//     "development-flag-1": {
+//         "beta_testers": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "beta",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
+//         },
+//         "status": false
+//     },
+//     "experimental-flag-1": {
+//         "status": false
+//     },
+//     "fake-flag-1": {
+//         "california_students": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "state",
+//                     "vals": [
+//                         "california"
+//                     ]
+//                 },
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "student",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
+//         },
+//         "status": true
+//     },
+//     "fake-flag-2": {
+//         "beta_testers": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "beta",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
+//         },
+//         "california_students": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "state",
+//                     "vals": [
+//                         "california"
+//                     ]
+//                 },
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "student",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
+//         },
+//         "status": false
+//     },
+//     "newflag": {
+//         "beta_testers": {
+//             "combine": "ANY",
+//             "conditions": [
+//                 {
+//                     "negate": false,
+//                     "operator": "EQ",
+//                     "attribute": "beta",
+//                     "vals": [
+//                         "true"
+//                     ]
+//                 }
+//             ]
+//         },
+//         "status": true
 //     }
-//   }
-//   } 
+// }
 // }
 
-// console.log('evaluate should be true:', evaluate('CA-header', userContext, c))
+// console.log('evaluate should be false:', evaluate('beta_processor', userContext, c))
 
 module.exports = evaluate;
