@@ -1,6 +1,6 @@
 {
-  "name": "beta-node-sdk",
-  "version": "1.0.12",
+  "name": "fana-node-sdk",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {

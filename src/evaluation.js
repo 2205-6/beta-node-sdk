@@ -62,7 +62,7 @@ const convertAttributeType = (attributeValue, op) => {
     case "STR_ENDS_WITH":
     case "STR_STARTS_WITH":
       attributeValue = attributeValue[0];
-      break;      
+      break;
   }
   return attributeValue;
 }
@@ -75,7 +75,7 @@ const evaluateCondition = (userContext, condition) => {
   const targetValue = convertAttributeType(condition.vals, op);
   const candidateValue = userContext[attribute];
   let result;
-  // if attribute not provided in userContext, always defaultValue regardless of negate
+  // if attribute not provided in userContext, always false regardless of negate
   if (!userContext.hasOwnProperty(attribute)) return false;
   result = operandMapper[op](targetValue, candidateValue);
   return condition.negate ? !result : result;
@@ -141,126 +141,5 @@ function evaluateAudience(audienceContext, userContext) {
   // console.log('audience key evaluations', audienceEvals);
   return evaluation;
 }
-
-// TEST
-// let userContext = { userId: 'jjuy', beta: true }
-// let c = {
-//   flags: {
-//     "beta_processor": {
-//         "beta_testers": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "beta",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "status": false
-//     },
-//     "development-flag-1": {
-//         "beta_testers": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "beta",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "status": false
-//     },
-//     "experimental-flag-1": {
-//         "status": false
-//     },
-//     "fake-flag-1": {
-//         "california_students": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "state",
-//                     "vals": [
-//                         "california"
-//                     ]
-//                 },
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "student",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "status": true
-//     },
-//     "fake-flag-2": {
-//         "beta_testers": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "beta",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "california_students": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "state",
-//                     "vals": [
-//                         "california"
-//                     ]
-//                 },
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "student",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "status": false
-//     },
-//     "newflag": {
-//         "beta_testers": {
-//             "combine": "ANY",
-//             "conditions": [
-//                 {
-//                     "negate": false,
-//                     "operator": "EQ",
-//                     "attribute": "beta",
-//                     "vals": [
-//                         "true"
-//                     ]
-//                 }
-//             ]
-//         },
-//         "status": true
-//     }
-// }
-// }
-
-// console.log('evaluate should be false:', evaluate('beta_processor', userContext, c))
 
 module.exports = evaluate;

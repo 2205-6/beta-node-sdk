@@ -1,15 +1,14 @@
-const Client = require('./Client');
+const FanaClient = require('./FanaClient');
 
-class Config {
+class FanaConfig {
   constructor(sdkKey, bearerAddress, reinitializationInterval) {
-    // initialize with sdkKey, bearer address
     this.sdkKey = sdkKey;
     this.bearerAddress = bearerAddress;
     this.reinitializationInterval = reinitializationInterval;
   }
 
   async connect() {
-    const client = new Client(this);
+    const client = new FanaClient(this);
     try {
       await client.getFlags();
       client.setStream();
@@ -21,4 +20,4 @@ class Config {
   }
 }
 
-module.exports = Config;
+module.exports = FanaConfig;
