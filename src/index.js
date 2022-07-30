@@ -1,3 +1,3 @@
-const Client = require('../lib/Client.js');
-const Config = require('../lib/Config.js');
-module.exports = { Client, Config };
+const FanaClient = require('./FanaClient.js');
+const FanaConfig = require('./FanaConfig.js');
+module.exports = { FanaClient, FanaConfig };

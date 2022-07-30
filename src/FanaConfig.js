@@ -1,24 +1,23 @@
-const Client = require('./Client');
+const FanaClient = require('./FanaClient');
 
-class Config {
-  constructor(sdkKey, bearerAddress, reinitializationInterval = 600000) {
-    // initialize with sdkKey, bearer address
+class FanaConfig {
+  constructor(sdkKey, bearerAddress, reinitializationInterval) {
     this.sdkKey = sdkKey;
     this.bearerAddress = bearerAddress;
     this.reinitializationInterval = reinitializationInterval;
   }
 
   async connect() {
-    const client = new Client(this);
+    const client = new FanaClient(this);
     try {
       await client.getFlags();
       client.setStream();
       return client;
     } catch (e) {
-      console.log('connection failed')
+      console.log('Fana Server Client: connection failed');
       return client;
     }
   }
 }
 
-module.exports = Config;
+module.exports = FanaConfig;

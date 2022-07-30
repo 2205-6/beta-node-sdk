@@ -1,23 +1,30 @@
 {
-  "name": "beta-node-sdk",
+  "name": "fana-node-sdk",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Server-side Node SDK for Fana",
+  "main": "dist/index.js",
   "scripts": {
+    "start": "npx babel src --watch --out-dir dist",
+    "build": "npx babel src --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2205-6/beta-node-sdk.git"
+    "url": "git+https://github.com/fana-io/fana-node-sdk.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/2205-6/beta-node-sdk/issues"
+    "url": "https://github.com/fana-io/fana-node-sdk/issues"
   },
-  "homepage": "https://github.com/2205-6/beta-node-sdk#readme",
+  "homepage": "https://github.com/fana-io/fana-node-sdk#readme",
   "dependencies": {
     "axios": "^0.27.2",
     "eventsource": "^2.0.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.9",
+    "@babel/core": "^7.18.9",
+    "@babel/preset-env": "^7.18.9"
   }
 }

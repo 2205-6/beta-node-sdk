@@ -1,59 +1,59 @@
-The Node SDK is to be used within the developer's application code. There are 2 primary pieces to it:
+# Using the Node SDK
 
-1. Client
-2. Config
+1. Install the Fana Node SDK in your project by running `npm i fana-node-sdk`
+2. Import the `FanaConfig` file into whichever files you will be evaluating flags in
 
-## Client
+`const { FanaConfig } = require('fana-node-sdk');`
 
-The Client is responsible for:
+3. Use the `FanaConfig` class constructor to instantiate a `config` object. This constructor takes three arguments:
 
-- Holding flag data
-- Holding audience data
-- Evaluating flag data (evaluateFlag(flagKey, userContext))
-- Fetching flag data from Bearer
-- Establishing SSE connection
-
-## Config
-
-Config is responsible for:
-
-- Storing configuration details (SDK key, Bearer address)
-- Instantiating the Client object
-- Invoking the initial connection on the Client
-
-## How to Use
-
-The Node SDK Client is meant to be established during the initial app server initialization.
+- (string) **SDK key** (from your dashboard's settings page)
+- (string) The **address** of your Flag Bearer
+- (number, optional) Desired **Reinitialization Interval**
+  - You can leave this blank if you do not wish for the SDK to reinitialize. You can find more information about this in the [Node SDK Reference](node-sdk-reference.md)
 
 ```javascript
-const sdkClient = require("node-sdk");
-const config = new sdkClient.Config("beta_sdk_0", "http://localhost:3001");
+// the sdk key is hard-coded here, but you should have it as an environment variable for security purposes
+const config = new FanaConfig('sdk_key_0', 'http://localhost:3001', 3600000)
+                                   ^SDK Key  ^Flag Bearer Address   ^Reinitialization Interval
 ```
 
-Then, you must create a Client instance by calling `config.connect()`. Note that this is an asynchronous method, so you should either wrap it with a promise or your own async function. You will be needing access to the returned `client` object, so make sure you define it in scope where you need it.
+4. Next, instantiate a `FanaClient` instance by calling `config.connect()`. Note that this is an asynchronous action, so you will need to use `async/await` or promises to perform this step:
 
 ```javascript
+// with async/await
 let client;
 
-const initializeSDK = async () => {
+const initializeFanaSDK = async () => {
   client = await config.connect();
 };
 
-initializeSDK();
-```
+initializeFanaSDK();
 
-Calling `connect` establishes the initial connection between the SDK and Bearer. This means the `client` object becomes populated with the flag and audience data, and the SSE connection is established.
+// with promises
+let client;
 
-Now you can use the `client`'s `evaluateFlag` method wherever you need to route users to different experiences. Note that unlike the React SDK, you must pass in the `userContext` object at this point.
-
-```javascript
-app.get("/", (req, res) => {
-  if (client.evaluateFlag("beta-processor", userContext)) {
-    res.send("BETA PROCESSOR IS ON");
-  } else {
-    res.send("BETA PROCESSOR IS OFF");
-  }
+config.connect().then((c) => {
+  client = c;
 });
 ```
 
-Thanks to the SSE connection, whenever an update comes in, the client object will replace its stored flag/audience data with the update, so any future customer requests will be using the most up-to-date rulesets.
+Now you can use the `FanaClient.prototype.evaluateFlag()` method. It takes three arguments:
+
+- (string) The flag key that you wish to evaluate
+- (object) The user context object
+- (boolean) An optional argument for a default value
+
+```javascript
+app.get("/", (req, res) => {
+  // note that the context object is hard-coded here.
+  // you will most likely be generating this dynamically
+  const userContext = { userId: "jjuy", beta: true };
+
+  if (client.evaluateFlag("beta_processor", userContext, true)) {
+    // execute beta processing
+  } else {
+    // execute regular processing
+  }
+});
+```

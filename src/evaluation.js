@@ -62,7 +62,7 @@ const convertAttributeType = (attributeValue, op) => {
     case "STR_ENDS_WITH":
     case "STR_STARTS_WITH":
       attributeValue = attributeValue[0];
-      break;      
+      break;
   }
   return attributeValue;
 }
@@ -75,7 +75,7 @@ const evaluateCondition = (userContext, condition) => {
   const targetValue = convertAttributeType(condition.vals, op);
   const candidateValue = userContext[attribute];
   let result;
-  // if attribute not provided in userContext, always defaultValue regardless of negate
+  // if attribute not provided in userContext, always false regardless of negate
   if (!userContext.hasOwnProperty(attribute)) return false;
   result = operandMapper[op](targetValue, candidateValue);
   return condition.negate ? !result : result;
@@ -93,30 +93,34 @@ const evaluate = (flagKey, userContext, client, defaultValue) => {
   const { status, ...targetedAudiences } = flag;
   // console.log(`${flagKey} qualifies with any of these audiences: ${targetedAudiences}`)
   // console.log(`We are using this user context: ${JSON.stringify(userContext)}`)
-  let eval = false;
+  let evaluation = false;
   // flags without any audience targeting apply to everyone
-  if (status && Object.keys(targetedAudiences).length == 0)  {
-    eval = true
+  if (!status) {
+    return evaluation;
+  }
+
+  if (Object.keys(targetedAudiences).length == 0)  {
+    evaluation = true
   } else {
     // loop through the array of targeted audiences
     for (let audience in targetedAudiences) {
       // console.log(`Looking at audience ${audience}`)
       const audienceContext = flag[audience];
-      eval = evaluateAudience(audienceContext, userContext)
+      evaluation = evaluateAudience(audienceContext, userContext)
       // since ANY audience is required, break early if true
-      if (eval) {
+      if (evaluation) {
         break;
       }
     }
   }
-  return eval;
+  return evaluation;
 }
 // evaluate audience conditions based on user attributes
 function evaluateAudience(audienceContext, userContext) {
-  let eval = false; // default to false
+  let evaluation = false; // default to false
   for (const condition of audienceContext.conditions) {
     if (evaluateCondition(userContext, condition)) {
-      eval = true;
+      evaluation = true;
       if (audienceContext.combine === 'ANY') {
         // if 'ANY' set, then return as soon as one condition is satisfied
         break;
@@ -128,57 +132,14 @@ function evaluateAudience(audienceContext, userContext) {
       // if condition is not met and ANY, keep going until theres no more conditions
       if (audienceContext.combine === 'ALL') {
         // exit early because at least one condition was not met.
-        eval = false;
+        evaluation = false;
         break;
       }
       // 'ANY' and false, go to next condition
     }
   }
   // console.log('audience key evaluations', audienceEvals);
-  return eval;
+  return evaluation;
 }
-
-// TEST
-// let userContext = { userId: 'jjuy', age: 27, country: 'Canada'}
-// let c = {
-//   flags: {
-//     "beta-header": {
-//       "status": true,
-//       "beta-testers": {
-//         combine: "ANY",
-//         conditions: [
-//           {
-//             "attribute": "beta",
-//             "operator": "EQ",
-//             "vals": ["true"],
-//             "negate": false
-//           }
-//         ]
-//       }
-//   },
-//   "CA-header": {
-//     "status": true,
-//     "na-testers": {
-//       combine: "ALL",
-//       conditions: [
-//         {
-//           "attribute": "country",
-//           "operator": "IN",
-//           "vals": ["canada", "usa"],
-//           "negate": false
-//         },
-//         {
-//           "attribute": "age",
-//           "operator": "GT",
-//           "vals": ["18"],
-//           "negate": false
-//         }
-//       ]
-//     }
-//   }
-//   } 
-// }
-
-// console.log('evaluate should be true:', evaluate('CA-header', userContext, c))
 
 module.exports = evaluate;
