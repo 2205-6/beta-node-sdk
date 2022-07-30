@@ -31,14 +31,14 @@ class FanaClient {
       };
 
       const { data } = await axios.get(
-        `${this.config.bearerAddress}/connect/serverInit/`,
+        `${this.config.bearerAddress}/connect/serverInit`,
         options
       );
 
       this.flags = data;
       this.clientReady = true;
     } catch (e) {
-      console.log('Error fetching flag data');
+      console.log('Fana Server Client: Error fetching flag data');
     }
   }
 
@@ -55,7 +55,7 @@ class FanaClient {
         }
       });
     } catch (e) {
-      console.log('error setting up stream');
+      console.log('Fana Server Client: error setting up stream');
     }
   }
 }

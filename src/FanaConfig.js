@@ -14,7 +14,7 @@ class FanaConfig {
       client.setStream();
       return client;
     } catch (e) {
-      console.log('connection failed');
+      console.log('Fana Server Client: connection failed');
       return client;
     }
   }
