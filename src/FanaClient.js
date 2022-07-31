@@ -51,6 +51,11 @@ class FanaClient {
 
       let attempts = 0;
 
+      eventSource.onopen = () => {
+        console.log('successfully connected for streaming');
+        attempts = 0;
+      }
+      
       eventSource.onerror = () => {
         if (attempts === this.attemptLimit) {
           console.log('attempt limit met, closing eventSource');
