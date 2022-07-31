@@ -7,6 +7,7 @@ class FanaClient {
     this.config = config;
     this.clientReady = false;
     this.flags = {};
+    this.attemptLimit = 3;
 
     if (this.config.reinitializationInterval) {
       setInterval(() => {
@@ -47,6 +48,19 @@ class FanaClient {
       let eventSource = new EventSource(
         `${this.config.bearerAddress}/stream/server?sdkKey=${this.config.sdkKey}`
       );
+
+      let attempts = 0;
+
+      eventSource.onerror = () => {
+        if (attempts === this.attemptLimit) {
+          console.log('attempt limit met, closing eventSource');
+          eventSource.close();
+        } else {
+          attempts++;
+          console.log('attempted to connect', attempts)
+        }
+      }
+
       eventSource.addEventListener(this.config.sdkKey, (e) => {
         const streamedData = JSON.parse(e.data);
 
