@@ -2,21 +2,22 @@
 const isEq = (targetVal, candidateVal) => {
   if (typeof candidateVal === 'string') {
     candidateVal = candidateVal.toLowerCase();
+    return candidateVal === targetVal.toLowerCase();
   }
 
   return candidateVal === targetVal;
 };
 
-const isIn = (targetVals, candidateVal) =>
-  targetVals.includes(candidateVal.toLowerCase());
-const isNotIn = (targetVals, candidateVal) =>
-  !targetVals.includes(candidateVal.toLowerCase());
-const strContains = (targetVal, candidateVal) =>
-  candidateVal.toLowerCase().includes(targetVal);
+const isIn = (targetVals, candidateVal) => {
+  targetVals = targetVals.map(val => val.toLowerCase());
+  return targetVals.includes(candidateVal.toLowerCase());
+}
+const strContains = (targetVal, candidateVal) => 
+  candidateVal.toLowerCase().includes(targetVal.toLowerCase());
 const strEndsWith = (targetVal, candidateVal) =>
-  candidateVal.toLowerCase().endsWith(targetVal);
+  candidateVal.toLowerCase().endsWith(targetVal.toLowerCase());
 const strStartsWith = (targetVal, candidateVal) =>
-  candidateVal.toLowerCase().startsWith(targetVal);
+  candidateVal.toLowerCase().startsWith(targetVal.toLowerCase());
 
 const isGreaterThan = (targetVal, candidateVal) => candidateVal > targetVal;
 const isGreaterEqThan = (targetVal, candidateVal) => candidateVal >= targetVal;
@@ -26,7 +27,6 @@ const isLessEqThan = (targetVal, candidateVal) => candidateVal <= targetVal;
 let operandMapper = {
   EQ: isEq,
   IN: isIn,
-  NOT_IN: isNotIn,
   STR_CONTAINS: strContains,
   STR_ENDS_WITH: strEndsWith,
   STR_STARTS_WITH: strStartsWith,
