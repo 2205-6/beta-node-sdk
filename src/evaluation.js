@@ -40,12 +40,14 @@ let operandMapper = {
 const convertAttributeType = (attributeValue, op) => {
   switch (op) {
     // EQ will always compare 1:1
-    case "EQ":
+    case 'EQ':
       attributeValue = attributeValue[0];
       // string, do nothing
       // boolean, number convert
-      if (attributeValue === 'true' || attributeValue === 'false') {
-        return Boolean(attributeValue);
+      if (attributeValue === 'true') {
+        return true
+      } else if (attributeValue === 'false') {
+        return false
       } else if (!isNaN(Number(attributeValue))) {
         return Number(attributeValue);
       }
